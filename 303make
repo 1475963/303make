@@ -1,0 +1,47 @@
+#!/usr/bin/python
+
+import sys
+import os
+import file_parsing as FileParsing, data_process as DataProcess
+from graphviz import Digraph
+
+"""
+first option, Makefile dependency graph visualization
+"""
+
+def     graph():
+    dot = Digraph()
+    dot.format = 'jpg'
+    dot.graph_attr.update(bgcolor='black')
+    dot.edge_attr.update(color='grey', arrowhead='diamond')
+    dot.node_attr.update(color='white', shape='hexagon', style='filled', fillcolor='green')
+    data = FileParsing.extract_graph()
+    if len(data) != 0:
+        DataProcess.prepare_graph(dot, data, None)
+        dot.render(filename='outputGraph')
+        os.system("viewnior outputGraph.jpg")
+    return 0
+
+"""
+second option, prompt the command list to execute
+"""
+
+def     commands(sourceFile):
+    dataSet = FileParsing.extract_data()
+    data = dataSet[0]
+    commands = dataSet[1]
+    matrix = DataProcess.do_adja_matrix(data)
+    DataProcess.finder(data, commands, matrix, sorted(data.keys()).index(sourceFile))
+    return 0
+
+"""
+entry point
+"""
+
+if __name__ == '__main__':
+    if len(sys.argv) == 1:
+        graph()
+    elif len(sys.argv) == 2:
+        commands(sys.argv[1])
+    else:
+        print("USAGE:\t./303make [source_file]")
